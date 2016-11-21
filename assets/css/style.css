@@ -1,0 +1,56 @@
+
+* {
+  margin:0;
+  padding:0;
+}
+
+body {
+  text-align:center;
+  @include filter-gradient(#5d4660, #f7eec7, vertical);
+  $experimental-support-for-svg: true;
+  @include background-image(linear-gradient(top, #5d4660    0%,#f7eec7 100%));
+  font-family: 'Droid Sans', sans-serif;
+}
+
+.table{
+  text-align: center;
+  }
+td{
+  max-width: 50%;
+  overflow: hidden;
+}
+.top {
+  background-color:#EAE9E4;
+  height: 40px;
+}
+#usertype{
+  float:left;
+  width:8%;
+  height:30px;
+  margin-top:5px;
+  margin-left: 25%;
+}
+#search{
+  float: left;
+  width: 30%;
+  height:30px;
+  margin-top:5px;
+  text-align: center;
+}
+#search_button{
+  float:left;
+  height:30px;
+  margin-top:5px;
+}
+#myCart{
+  padding-top: 10px;
+}
+#myOrder{
+  padding-top: 10px;
+  float: right;
+  padding-right: 100px;
+}
+#submitOrder{
+  width: 10%;
+  margin-right:4%; 
+}

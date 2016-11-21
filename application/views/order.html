@@ -1,0 +1,137 @@
+<html>
+<head>
+<title>Product</title>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/css/style.css') ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/css/bootstrap.min.css') ?>">
+<script src="<?php echo base_url('assets/js/jquery-1.11.2.min.js') ?>"></script>
+</head>
+<body>
+<div class="top">
+ <div id="myOrder"><a href="<?php echo site_url('')?>" >My Order</a></div>
+</div>
+<?php if (is_array($res)): ?>
+  <?php $i=1?>
+  <?php foreach($res as $items): ?>
+  <table class="table table-bordered table-striped">
+      <tr ><td colSpan="4"><B>Order<?=$i++?></B></td></tr>
+      <tr>
+        <td><B>NAME</B></td>
+        <td><B>PRICE</B></td>
+        <td><B>NUMBER</B></td>
+        <td><B>SUBTOTAL</B></td>
+      </tr>
+        <?php foreach($items as $detail): ?>
+          <?php if (is_array($detail)): ?>
+            <tr>
+              <td> <input type="hidden" value="<?=$detail['o_id']?>" /> <?=$detail["p_name"]?> </td>
+              <td> <?=$detail["p_price"]?> </td>
+              <td> <?=$detail["p_nums"]?> </td>
+              <td> <?=($detail["p_price"]*$detail["p_nums"])?></td>
+            </tr>
+          <?php else: ?>
+            <tr>
+              <td></td>
+              <td>Total_price:</td>
+              <td><?=$detail?></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><input type="button" name="DeleteOrder" id="DeleteOrder" class="btn btn-default" value="DeleteOrder"></td>
+              <td><input type="button" name="orderSubmit" id="orderSubmit" class="btn btn-default" value="SubmitOrder"></td>
+              <td></td>
+            </tr>
+          <?php endif;?>
+      <?php endforeach; ?>
+  </table>
+  <?php endforeach; ?>
+<?php endif;?>
+<script type="text/javascript">
+$(document).ready(function() {
+  function submitD() {
+    // var o_id = $(this).parent().parent().parent().children().eq(2).children().eq(0).val();
+    var o_id = $(this).parent().parent().parent().children().eq(2).children().eq(0).children().val();
+    $.ajax({
+      url: "<?php echo site_url('Order/deleteOrder')?>",
+      type: 'post',
+      data: {"o_id":o_id},
+      dataType: 'json',
+
+      timeout: 1000,
+      // cache: false,
+      beforeSend: LoadFunction,
+      //加载执行方法
+      error: erryFunction,
+      //错误执行方法
+      success: function(json) {
+        alert("Delete successfully");
+        // console.log(o_id);
+        window.location.reload();
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  alert(XMLHttpRequest.status);
+                  alert(XMLHttpRequest.readyState);
+                  alert(textStatus);
+              }
+       //成功执行方法
+    })
+    function LoadFunction() {
+      //alert(0);
+    }
+    function erryFunction() {
+      //alert(1);
+    }
+  }
+  function submitC()
+  {
+      var o_id = $(this).parent().parent().parent().children().eq(2).children().eq(0).children().val();
+      $.ajax({
+      url: "<?php echo site_url('Order/orderSubmit')?>",
+      type: 'post',
+      // data: data_res_arr,
+      data: {
+        "o_id":o_id
+      },
+      dataType: 'json',
+      timeout: 1000,
+      // cache: false,
+      beforeSend: LoadFunction,
+      //加载执行方法
+      error: erryFunction,
+      //错误执行方法
+      success: function(data) {
+        if(data.result == 0)
+        {
+          alert("Submit failure: Your balance is not enough！");
+        }
+        else if (data.result == 1)
+        {
+          alert("Submit Successfully");
+        }
+        else
+        {
+          alert("An unknown error occured");
+        }
+
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  alert(XMLHttpRequest.status);
+                  alert(XMLHttpRequest.readyState);
+                  alert(textStatus);
+              }
+       //成功执行方法
+    })
+    function LoadFunction() {
+      //alert(0);
+    }
+    function erryFunction() {
+      //alert(1);
+    }
+  }
+  $("td input[name='DeleteOrder']").click(submitD);
+  $("td input[name='orderSubmit']").click(submitC);
+
+});
+</script>
+</body>
+</html>

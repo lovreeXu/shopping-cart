@@ -1,0 +1,90 @@
+	<html>
+<head>
+	<title>Product</title>
+	<link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/css/style.css') ?>">
+	<link rel="stylesheet" href="<?php echo base_url('assets/css/bootstrap.min.css') ?>">
+	<script src="<?php echo base_url('assets/js/jquery-1.11.2.min.js') ?>"></script>
+</head>
+<body>
+	<div class="top">
+	 <?php $attributes = array('id' => 'form', 'method' => 'post'); echo form_open('Welcome/searchSubmit', $attributes);?>
+		<select id="usertype" name="usertype" class="selectpicker show-tick form-control">
+						<option name="name" value="p_name">Name</option>
+						<option name="category" value="p_category">Category</option>
+		</select>
+		<input type="text" class="form-control" name="search" id="search" value="">
+		<input id="search_button" type="submit" class="btn btn-default" value="search" />
+	 </form>
+	 <div id="myCart"><a href="<?php echo site_url('cart/index')?>" >My Cart</a></div>
+	</div>
+	<table class="table table-bordered table-striped">
+			<tr>
+				<td><B>NAME</B></td>
+				<td><B>CATEGORY</B></td>
+				<td><B>PRICE</B></td>
+				<td><B>DESCRIPTION</B></td>
+				<td><B>NUMBER</B></td>
+				<td><B>ADD</B></td>
+			</tr>
+
+			<form id="cartForm" method="post" >
+			<?php foreach($res as $items): ?>
+				<tr>
+					<td> <input type="hidden" value="<?=$items['p_id']?>"> <?=$items["p_name"]?> </td>
+					<td> <?=$items["p_category"]?> </td>
+					<td> <?=$items["p_price"]?> </td>
+					<td style="width:50%;max-width:500px;overflow:hidden;"> <?=$items["p_description"]?> </td>
+					<td style="width:10%;"><input style="width:60%;text-align:center;margin-left:20%;" type="text" name="number" id="number" class="form-control"></td>
+					<td><input type="button" name="add" id="add" class="btn btn-default" value="addToCart"></td>
+			  </tr>
+			<?php endforeach; ?>
+		 </form>
+	</table>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		function submitD() {
+			var pro_id = $(this).parent().parent().children().eq(0).children().val();
+			var pro_name = $(this).parent().parent().children().eq(0).text();
+			var pro_num = $(this).parent().parent().children().eq(4).children().val();
+			$.ajax({
+				url: "<?php echo site_url('Welcome/addToCart')?>",
+				type: 'post',
+				data: {"pro_name":pro_name,"pro_id":pro_id,"pro_num":pro_num},
+				dataType: 'json',
+				timeout: 1000,
+				// cache: false,
+				beforeSend: LoadFunction,
+				//加载执行方法
+				error: erryFunction,
+				//错误执行方法
+				success: function(json) {
+					if (json.result == 1)
+					{
+						alert("success");
+					}
+					else
+					{
+						console.log(json);
+					}
+
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+										alert(XMLHttpRequest.status);
+										alert(XMLHttpRequest.readyState);
+										alert(textStatus);
+								}
+				 //成功执行方法
+			})
+			function LoadFunction() {
+				//alert(0);
+			}
+			function erryFunction() {
+				//alert(1);
+			}
+		}
+		$("td input[type='button']").click(submitD);
+
+	});
+	</script>
+</body>
+</html>

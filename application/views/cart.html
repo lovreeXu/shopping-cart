@@ -1,0 +1,115 @@
+<html>
+<head>
+<title>Product</title>
+<link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/css/style.css') ?>">
+<link rel="stylesheet" href="<?php echo base_url('assets/css/bootstrap.min.css') ?>">
+<script src="<?php echo base_url('assets/js/jquery-1.11.2.min.js') ?>"></script>
+</head>
+<body>
+<div class="top">
+ <div id="myOrder"><a href="<?php echo site_url('Order/index')?>" >My Order</a></div>
+</div>
+<table class="table table-bordered table-striped">
+    <tr>
+      <td><B>PRODUCT</B></td>
+      <td><B>NUMBER</B></td>
+      <td><B>OPERATION</B></td>
+    </tr>
+    <form id="cartForm" method="post" >
+    <?php foreach($res as $items): ?>
+      <tr>
+        <td> <input type="hidden" value="<?=$items['p_id']?>"><?=$items["p_name"]?> </td>
+        <td> <?=$items["p_num"]?> </td>
+        <td><input type="button" name="remove" id="remove" class="btn btn-default" value="remove"></td>
+      </tr>
+    <?php endforeach; ?>
+   </form>
+</table>
+<div id="submitOrderDiv">
+  <input type="button" name="submitOrder" id="submitOrder" class="btn btn-default" value="Settlement">
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+  function submitD() {
+    var p_id = $(this).parent().parent().children().eq(0).children().val();
+    var pro_name = $(this).parent().parent().children().eq(0).text();
+    $.ajax({
+      url: "<?php echo site_url('Cart/removeProduct')?>",
+      type: 'post',
+      data: {"p_id":p_id},
+      dataType: 'json',
+      timeout: 1000,
+      // cache: false,
+      beforeSend: LoadFunction,
+      //加载执行方法
+      error: erryFunction,
+      //错误执行方法
+      success: function(json) {
+        if (json.result == 1)
+        {
+          console.log(json);
+          alert("remove successfully");
+          window.location.reload();
+        }
+        else
+        {
+          alert("failed");
+        }
+
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  alert(XMLHttpRequest.status);
+                  alert(XMLHttpRequest.readyState);
+                  alert(textStatus);
+              }
+       //成功执行方法
+    })
+    function LoadFunction() {
+      //alert(0);
+    }
+    function erryFunction() {
+      //alert(1);
+    }
+  }
+  function submitC()
+  {
+    var data_res = <?php echo json_encode($res)?>;
+    $.ajax({
+      url: "<?php echo site_url('Order/addOrder')?>",
+      type: 'post',
+      // data: data_res_arr,
+      data: {
+        f_data:data_res
+      },
+      dataType: 'json',
+      timeout: 1000,
+      // cache: false,
+      beforeSend: LoadFunction,
+      //加载执行方法
+      error: erryFunction,
+      //错误执行方法
+      success: function(data) {
+        alert("Submit successfully");
+        //console.log(data);
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+                  alert(XMLHttpRequest.status);
+                  alert(XMLHttpRequest.readyState);
+                  alert(textStatus);
+              }
+       //成功执行方法
+    })
+    function LoadFunction() {
+      //alert(0);
+    }
+    function erryFunction() {
+      //alert(1);
+    }
+  }
+  $("td input[type='button']").click(submitD);
+  $("#submitOrder").click(submitC);
+
+});
+</script>
+</body>
+</html>
