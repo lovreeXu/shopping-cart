@@ -55,6 +55,22 @@ class Welcome extends CI_Controller {
 
 	}
 
+	public function test1()
+	{
+		$pro_id = 1000000000;
+		$sql_1 = "SELECT * FROM cart WHERE p_id = ?";
+		$res_sql1 = $this->db->query($sql_1,$pro_id)->result_array();
+		var_dump($res_sql1);
+			if($res_sql1 == NULL)
+			{
+				$sql_2 = "INSERT INTO `cart`(`c_id`, `u_id`, `p_id`, `p_num`, `p_name`) VALUES (NULL,?,?,?,?)";
+				$this->db->query($sql_2,array(3,$pro_id,1,"a"));
+			}
+			else {
+				echo 1;
+			}
+	}
+
 	public function addToCart()
 	{
 		if(isset($_POST['pro_id']) && isset($_POST['pro_num']))
@@ -68,23 +84,25 @@ class Welcome extends CI_Controller {
 			$res_uid = $this->db->query($sql,$u_name)->result_array();
 
 			//插入数据到数据库
-			$sql_2 = "INSERT INTO `cart`(`c_id`, `u_id`, `p_id`, `p_num`, `p_name`) VALUES (NULL,?,?,?,?)";
-			$this->db->query($sql_2,array(intval($res_uid[0]['u_id']),$pro_id,$pro_num,$pro_name));
+			$sql_1 = "SELECT * FROM cart WHERE p_id = ? AND u_id = ?";
+			$res_sql1 = $this->db->query($sql_1,array($pro_id,intval($res_uid[0]['u_id'])))->result_array();
+			if($res_sql1 == NULL)
+			{
+				$sql_2 = "INSERT INTO `cart`(`c_id`, `u_id`, `p_id`, `p_num`, `p_name`) VALUES (NULL,?,?,?,?)";
+				$this->db->query($sql_2,array(intval($res_uid[0]['u_id']),$pro_id,$pro_num,$pro_name));
+			}
+			else
+			{
+				$p_new_num = $pro_num + $res_sql1[0]["p_num"];
+				$sql_3 = "UPDATE cart SET p_num = ? WHERE p_id = ?";
+				$this->db->query($sql_3,array($p_new_num,$pro_id));
+			}
 
-			echo json_encode( array('result' => '1', 'pro_id' => $pro_id, 'pro_num' => $pro_num ) );
+			echo json_encode( array('result' => '1', 'pro_id' => $pro_id, 'pro_num' => $res_sql1 ) );
 		}
 		else
 		{
 			redirect("Welcome/index");
-			// $u_name = $this->session->userdata('shops_username');
-			//
-			// $sql = "SELECT u_id FROM users WHERE u_name = ?";
-			// $res_uid = $this->db->query($sql,$u_name)->result_array();
-			//
-			// $sql_2 = "INSERT INTO `cart`( `u_id`, `p_id`, `p_num`) VALUES (?,?,?)";
-			// $this->db->query($sql_2,array(intval($res_uid[0]['u_id']),3,1));
-			//
-			// var_dump($res_uid[0]['u_id']);
 		}
 	}
 }
